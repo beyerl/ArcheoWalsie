@@ -47,6 +47,9 @@
   #info h2{font-size:16px;margin:0 0 8px}
   @media (max-width:899px){.leaflet-top.leaflet-right{top:240px}.leaflet-bottom.leaflet-left{bottom:56px}}
   @media (min-width:900px){.leaflet-top.leaflet-right{right:375px}#sheet{left:auto;right:10px;top:10px;bottom:auto;max-height:calc(100vh - 20px);width:360px}#top{right:auto}}
+  .lit{margin-top:6px;padding-top:6px;border-top:1px solid var(--line);font-size:12px}
+  .lit ul{margin:2px 0 0;padding-left:16px}
+  .lit li{margin:2px 0}
   #btnLang{margin-left:auto;letter-spacing:.03em}
   #btnLang span{color:var(--muted)}
   #btnLang span.cur{color:var(--ink);font-weight:700}
@@ -119,6 +122,7 @@ const I18N = {
     alertOn:"Alarm, sobald du weniger als {r} m von einer Fundstelle entfernt bist", alertOff:"Näherungsalarm aus",
     roadTip:"Römerstraße (ungefährer Verlauf)", street:"Straßenkarte", topo:"Topografisch", sat:"Satellit",
     origMap:"Originale Fundkarte", road:"Römerstraße",
+    litTitle:"Fachliteratur (frei zugänglich)", inGerman:"",
     compass:["N","NO","O","SO","S","SW","W","NW"]
   },
   en: {
@@ -143,6 +147,7 @@ const I18N = {
     alertOn:"Alert when within {r} m of a find", alertOff:"Proximity alert off",
     roadTip:"Roman road (approx.)", street:"Street map", topo:"Topographic", sat:"Satellite",
     origMap:"Original find map", road:"Roman road",
+    litTitle:"Scholarly literature (free access)", inGerman:" (in German)",
     compass:["N","NE","E","SE","S","SW","W","NW"]
   }
 };
@@ -173,6 +178,27 @@ const NAMES = {
   "Schloss Kleßheim":"Kleßheim Palace",
   "Walser Birnbaum":"Wals pear tree"
 };
+// freely accessible scholarly literature; `de` marks German-language texts
+const LIT = {
+  foe51:   {de:true, t:"Fundberichte aus Österreich 51 (2012), KG Wals I: Grabung in der römischen Villa Loig, S. 292 (BDA)",
+            url:"https://www.bda.gv.at/dam/jcr:1dc5b412-e91f-4b03-9070-c73eb243cd03/BDA-F%C3%9651.pdf"},
+  leiza:   {de:false, t:"LEIZA research project: Emergence of villae landscapes in Noricum (Loig/Wals)",
+            url:"https://www1.leiza.de/transformation/noricum/villae_noricum/villae_noricum_english.htm"},
+  thalerhof:{de:true, t:"Loig und Thalerhof – Großvillen in Noricum. In: Monumente der Macht, Saarbrücker Beiträge zur Altertumskunde 90 (2016) 41–71 (academia.edu)",
+            url:"https://uni-graz.academia.edu/PatrickMarko"},
+  gutshof: {de:true, t:"Römische Guts- und Bauernhöfe in Nordwest-Noricum (academia.edu)",
+            url:"https://www.academia.edu/1480105/R%C3%B6mische_Guts_und_Bauernh%C3%B6fe_in_Nordwest_Noricum"},
+  graves:  {de:true, t:"Kaiserzeitliche Bestattungen ‚in villa‘ im Salzburger Flachgau. In: ArchaeoPlus 8 (Salzburg 2017) 129–153 (ResearchGate)",
+            url:"https://www.researchgate.net/publication/330401298"}
+};
+const LOIG=[47.78816,12.992338];   // centre of the villa area; the find cluster around it ends at ~400 m
+function litFor(f){
+  const k=new Set();
+  if(haversine(LOIG[0],LOIG[1],f.lat,f.lon)<=400) ['foe51','leiza','thalerhof','gutshof'].forEach(x=>k.add(x));
+  if(f.epoch==='Römerzeit' && f.type==='Grab') k.add('graves');
+  if(f.epoch==='Römerzeit' && ['Siedlung','Haus','Produktionsstätte','Grab'].includes(f.type)) k.add('gutshof');
+  return [...k].map(x=>LIT[x]);
+}
 // data is German; English labels come from the tables above
 const epochName=k=>lang==='de'?k:EPOCHS[k].en;
 const typeName=k=>lang==='de'?k:(TYPES[k]||k);
@@ -242,6 +268,7 @@ function popupHtml(f){
   <div>${typeName(f.type)}${orig(f.type)}</div>
   ${dist}
   <div class="muted">${g} · ±50 m · #${f.id}</div>
+  ${(lit=>lit.length?`<div class="lit"><b>${t('litTitle')}</b><ul>${lit.map(l=>`<li><a href="${l.url}" target="_blank" rel="noopener">${l.t}</a>${l.de?`<span class="muted">${t('inGerman')}</span>`:''}</li>`).join('')}</ul></div>`:'')(litFor(f))}
   <div style="margin-top:6px"><a href="https://www.google.com/maps/dir/?api=1&destination=${g}&travelmode=walking" target="_blank" rel="noopener">${t('walk')}</a> · <a href="https://www.openstreetmap.org/?mlat=${f.lat}&mlon=${f.lon}#map=18/${f.lat}/${f.lon}" target="_blank" rel="noopener">OSM ↗</a></div>`;
 }
 

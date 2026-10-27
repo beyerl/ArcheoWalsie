@@ -14,6 +14,7 @@ An interactive map of the archaeological find spots in the municipality of Wals-
 - The original find map can be shown on top of the street, topographic or satellite map, with adjustable opacity
 - Filter by epoch: tap a chip to toggle it, double-tap to show only that epoch
 - Approximate course of the Roman road
+- Links to freely accessible scholarly literature in the info boxes. For now this covers the Roman villa of Loig and its surroundings, and the Roman graves
 - German and English interface: switch with the **DE | EN** button
 - Right-click or long-press the map to test from any spot without GPS
 

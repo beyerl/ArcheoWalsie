@@ -14,6 +14,7 @@ Eine interaktive Karte der archäologischen Fundstellen in der Gemeinde Wals-Sie
 - Die Originalkarte lässt sich über Straßen-, Topo- oder Satellitenkarte legen, mit einstellbarer Deckkraft
 - Filter nach Epoche: Antippen schaltet eine Epoche ein oder aus, Doppeltippen zeigt nur diese Epoche
 - Ungefährer Verlauf der Römerstraße
+- Links zu frei zugänglicher Fachliteratur in den Infoboxen. Bisher betrifft das die römische Villa Loig mit ihrer Umgebung sowie die römischen Gräber
 - Oberfläche auf Deutsch und Englisch: umschalten mit der Schaltfläche **DE | EN**
 - Rechtsklick oder langes Drücken auf die Karte simuliert einen Standort, ganz ohne GPS
 
