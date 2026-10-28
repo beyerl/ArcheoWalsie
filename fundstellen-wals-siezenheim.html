@@ -89,6 +89,7 @@
   <p data-i18n-html="info2"></p>
   <p data-i18n-html="info3"></p>
   <p class="muted" data-i18n="info4"></p>
+  <p data-i18n-html="info5"></p>
   <button id="btnInfoClose" class="primary" data-i18n="close"></button>
 </div></div>
 
@@ -112,6 +113,7 @@ const I18N = {
     info2:"<b>Die Genauigkeit liegt bei etwa ±50 m</b>, eng gruppierte Symbole auf der Tafel können etwas stärker verschoben sein. Verstehe die Positionen als „ungefähr dieses Feld“, nicht als exakten Punkt.",
     info3:"Viele Fundstellen liegen auf Privatgrund oder sind geschützte Denkmäler. Schauen, nicht graben: Metallsuche und Grabungen ohne Genehmigung des Bundesdenkmalamts sind in Österreich verboten.",
     info4:"Mit dem Deckkraft-Regler kannst du die Originalkarte ein- und ausblenden, um sie mit der modernen Grundkarte zu vergleichen.",
+    info5:"<b>Allgemeine Literatur:</b> F. Müller, Heimatbuch von Wals-Siezenheim (Wals 1963). Viele Fundmeldungen bis 1975 verzeichnet die <a href=\"https://www.zobodat.at/pdf/MGSL_115_2_0267-0311.pdf\" target=\"_blank\" rel=\"noopener\">Bibliographie Martin Hell 1960–1975</a> (MGSLK 115, frei auf zobodat). Die Fundstellen-Popups nennen frei verfügbare und gedruckte Fachliteratur.",
     close:"Schließen",
     nearestTitle:"Nächste Fundstellen ({n})", findsTitle:"Fundstellen ({n}) · Standort bestimmen, um nach Entfernung zu sortieren",
     ofYou:"{dir} von dir", walk:"Zu Fuß hin ↗",
@@ -122,7 +124,7 @@ const I18N = {
     alertOn:"Alarm, sobald du weniger als {r} m von einer Fundstelle entfernt bist", alertOff:"Näherungsalarm aus",
     roadTip:"Römerstraße (ungefährer Verlauf)", street:"Straßenkarte", topo:"Topografisch", sat:"Satellit",
     origMap:"Originale Fundkarte", road:"Römerstraße",
-    litTitle:"Fachliteratur (frei zugänglich)", inGerman:"",
+    litTitle:"Fachliteratur online (frei zugänglich)", printTitle:"Gedruckte Literatur (Bibliothek)", inGerman:"",
     compass:["N","NO","O","SO","S","SW","W","NW"]
   },
   en: {
@@ -137,6 +139,7 @@ const I18N = {
     info2:"<b>Accuracy is roughly ±50 m</b>, and clustered symbols on the board may be offset a little more. Treat positions as “the field around here”, not an exact spot.",
     info3:"Many sites are on private land or are protected monuments. Look, don't dig: metal detecting and digging without a permit from the Bundesdenkmalamt are illegal in Austria.",
     info4:"Fade the original map in or out with the opacity slider to compare against the modern base map.",
+    info5:"<b>General literature (in German):</b> F. Müller, Heimatbuch von Wals-Siezenheim (Wals 1963). Many find reports up to 1975 are listed in the <a href=\"https://www.zobodat.at/pdf/MGSL_115_2_0267-0311.pdf\" target=\"_blank\" rel=\"noopener\">Martin Hell bibliography 1960–1975</a> (MGSLK 115, free on zobodat). The find popups list free and printed scholarly literature.",
     close:"Close",
     nearestTitle:"Nearest finds ({n})", findsTitle:"Finds ({n}) · locate to sort by distance",
     ofYou:"{dir} of you", walk:"Walk there ↗",
@@ -147,7 +150,7 @@ const I18N = {
     alertOn:"Alert when within {r} m of a find", alertOff:"Proximity alert off",
     roadTip:"Roman road (approx.)", street:"Street map", topo:"Topographic", sat:"Satellite",
     origMap:"Original find map", road:"Roman road",
-    litTitle:"Scholarly literature (free access)", inGerman:" (in German)",
+    litTitle:"Literature online (free access)", printTitle:"Printed literature (library)", inGerman:" (in German)",
     compass:["N","NE","E","SE","S","SW","W","NW"]
   }
 };
@@ -178,26 +181,77 @@ const NAMES = {
   "Schloss Kleßheim":"Kleßheim Palace",
   "Walser Birnbaum":"Wals pear tree"
 };
-// freely accessible scholarly literature; `de` marks German-language texts
+// scholarly literature; entries with url are freely accessible online, the rest are print-only.
+// All are German-language unless en:true; n is an optional short note per language.
+const Z="https://www.zobodat.at/pdf/";
 const LIT = {
-  foe51:   {de:true, t:"Fundberichte aus Österreich 51 (2012), KG Wals I: Grabung in der römischen Villa Loig, S. 292 (BDA)",
-            url:"https://www.bda.gv.at/dam/jcr:1dc5b412-e91f-4b03-9070-c73eb243cd03/BDA-F%C3%9651.pdf"},
-  leiza:   {de:false, t:"LEIZA research project: Emergence of villae landscapes in Noricum (Loig/Wals)",
-            url:"https://www1.leiza.de/transformation/noricum/villae_noricum/villae_noricum_english.htm"},
-  thalerhof:{de:true, t:"Loig und Thalerhof – Großvillen in Noricum. In: Monumente der Macht, Saarbrücker Beiträge zur Altertumskunde 90 (2016) 41–71 (academia.edu)",
-            url:"https://uni-graz.academia.edu/PatrickMarko"},
-  gutshof: {de:true, t:"Römische Guts- und Bauernhöfe in Nordwest-Noricum (academia.edu)",
-            url:"https://www.academia.edu/1480105/R%C3%B6mische_Guts_und_Bauernh%C3%B6fe_in_Nordwest_Noricum"},
-  graves:  {de:true, t:"Kaiserzeitliche Bestattungen ‚in villa‘ im Salzburger Flachgau. In: ArchaeoPlus 8 (Salzburg 2017) 129–153 (ResearchGate)",
-            url:"https://www.researchgate.net/publication/330401298"}
+  foe51:     {t:"Fundberichte aus Österreich 51 (2012), KG Wals I: Grabung in der römischen Villa Loig, S. 292 (BDA)",
+              url:"https://www.bda.gv.at/dam/jcr:1dc5b412-e91f-4b03-9070-c73eb243cd03/BDA-F%C3%9651.pdf"},
+  leiza:     {en:true, t:"LEIZA research project: Emergence of villae landscapes in Noricum (Loig/Wals)",
+              url:"https://www1.leiza.de/transformation/noricum/villae_noricum/villae_noricum_english.htm"},
+  thalerhof: {t:"Loig und Thalerhof – Großvillen in Noricum. In: Monumente der Macht, Saarbrücker Beiträge zur Altertumskunde 90 (2016) 41–71 (academia.edu)",
+              url:"https://uni-graz.academia.edu/PatrickMarko"},
+  gutshof:   {t:"Römische Guts- und Bauernhöfe in Nordwest-Noricum (academia.edu)",
+              url:"https://www.academia.edu/1480105/R%C3%B6mische_Guts_und_Bauernh%C3%B6fe_in_Nordwest_Noricum"},
+  graves:    {t:"Kaiserzeitliche Bestattungen ‚in villa‘ im Salzburger Flachgau. In: ArchaeoPlus 8 (Salzburg 2017) 129–153 (ResearchGate)",
+              url:"https://www.researchgate.net/publication/330401298"},
+  hell62graves:{t:"M. Hell, Römergräber aus Siezenheim und Liefering. MGSLK 102 (1962) 13–22 (zobodat)", url:Z+"MGSL_102_0013-0022.pdf"},
+  hell62stamps:{t:"M. Hell, Zwei römische Ziegelstempel aus Salzburg (Loig). MGSLK 102 (1962) 23–26 (zobodat)", url:Z+"MGSL_102_0023-0026.pdf"},
+  mitterer00:{t:"K. A. Mitterer, Anno 1800: Schlacht vor den Toren Salzburgs. MGSLK 140 (2000) 169–184 (zobodat)", url:Z+"MGSL_140_0169-0184.pdf",
+              n:{de:"erwähnt Feldbefestigungen von 1800; Bezug zu dieser Schanze nicht gesichert", en:"mentions field fortifications of 1800; link to this earthwork unconfirmed"}},
+  bechstein: {t:"L. Bechstein, Der Birnbaum auf dem Walserfeld. Deutsches Sagenbuch Nr. 987 (Projekt Gutenberg)",
+              url:"https://projekt-gutenberg.org/authors/ludwig-bechstein/books/deutsches-sagenbuch/chapter/989", n:{de:"Sage", en:"legend"}},
+  gruber22:  {t:"Ch. Gruber, U. Pintz, Die römische Palastvilla von Loig. Archäologie in Salzburg 12 (Salzburg/Bonn 2022)"},
+  gruber17:  {t:"Ch. Gruber, Zur baulichen Entwicklung der Palastvilla Loig bei Salzburg. In: ArchaeoPlus 8 (Salzburg 2017)"},
+  loig8182:  {t:"F. Moosleitner, Vorbericht zu den Grabungen in Loig; E. M. Feldinger u. a., Die römische Villa Loig bei Salzburg. Ergebnisse der Ausgrabungen 1978–81. Jahresschrift Salzburger Museum Carolino Augusteum 27/28 (1981/82)"},
+  thiasos:   {t:"R. Kastler, Neuer Wein in alte Schläuche; N. Heger, Ex ungue leonem pingere – Zu einem Freskenrest aus Loig. Beide in: Thiasos. Festschrift für Erwin Pochmarski (Graz)"},
+  jobst82:   {t:"W. Jobst, Römische Mosaiken in Salzburg (Wien 1982)"},
+  hell61stamp:{t:"M. Hell, Ein zweiter römischer Ziegelstempel aus Juvavum. Pro Austria Romana 11 (1961) 24–25"},
+  hell61fib: {t:"M. Hell, Römische Fibel mit Ritzinschrift aus Wals. Pro Austria Romana 11 (1961) 12"},
+  hell74:    {t:"M. Hell, Neufunde aus dem Lande Salzburg. Archaeologia Austriaca 55 (1974) 95–99"},
+  hell63axes:{t:"M. Hell, Steinbeile aus Salzburg. Archaeologia Austriaca 34 (1963) 5–12"},
+  hell60swords:{t:"M. Hell, Drei Bronzeschwerter aus der Saalachau bei Wals (Zeitungsbericht, 1960)",
+              n:{de:"möglicherweise dieser Hortfund", en:"possibly this hoard"}},
+  hell48:    {t:"M. Hell, Ein münzdatiertes Grab der Spätantike aus Salzburg-Kleßheim. Jahreshefte des Österr. Archäolog. Institutes 35 (1948) Sp. 53–64"},
+  hell69:    {t:"M. Hell, Römerstein aus der Kirche in Wals. Pro Austria Romana 19 (1969) 17–18"},
+  foeBz:     {t:"Fundberichte aus Österreich, Berichtsjahre 1951–1955: Bronzezeit, Wals-Siezenheim, S. 40"},
+  foeLt:     {t:"Fundberichte aus Österreich, Berichtsjahre 1951–1955: Latènezeit, Wals-Siezenheim, S. 78"},
+  foeRom:    {t:"Fundberichte aus Österreich, Berichtsjahre 1951–1955: Römerzeit, Wals-Siezenheim, S. 113"},
+  foeFma:    {t:"Fundberichte aus Österreich, Berichtsjahre 1951–1955: Frühmittelalter, Wals-Siezenheim, S. 136"},
+  dehio:     {t:"Dehio-Handbuch. Die Kunstdenkmäler Österreichs: Salzburg (Wien 1986)"},
+  berndl:    {t:"H. Berndl, Die Kirchen der Pfarre Wals: Pfarrkirche zum hl. Georg in Wals (Salzburg 2005)"},
+  mitterer99:{t:"K. A. Mitterer, Salzburg anno 1800 – Die vergessene Schlacht auf den Walser Feldern (Salzburg 1999)"}
 };
-const LOIG=[47.78816,12.992338];   // centre of the villa area; the find cluster around it ends at ~400 m
+const LOIG=[47.78816,12.992338];       // centre of the villa area; the find cluster around it ends at ~400 m
+const KLESSHEIM=[47.819705,12.992243]; // late Roman graves in the palace park
 function litFor(f){
-  const k=new Set();
-  if(haversine(LOIG[0],LOIG[1],f.lat,f.lon)<=400) ['foe51','leiza','thalerhof','gutshof'].forEach(x=>k.add(x));
-  if(f.epoch==='Römerzeit' && f.type==='Grab') k.add('graves');
-  if(f.epoch==='Römerzeit' && ['Siedlung','Haus','Produktionsstätte','Grab'].includes(f.type)) k.add('gutshof');
+  const k=new Set(), add=(...x)=>x.forEach(y=>k.add(y)), {epoch:e,type:ty}=f;
+  if(haversine(LOIG[0],LOIG[1],f.lat,f.lon)<=400)
+    add('foe51','leiza','thalerhof','gutshof','hell62stamps','gruber22','gruber17','loig8182','thiasos','jobst82','hell61stamp');
+  if(e==='Steinzeit') add('hell63axes');
+  if(e==='Bronzezeit') add('foeBz');
+  if(ty==='Hortfund') add('hell60swords');
+  if(e==='Eisenzeit') add('foeLt');
+  if(e==='Römerzeit'){
+    add('foeRom');
+    if(ty==='Grab') add('graves','hell62graves');
+    if(ty==='Grab' && haversine(KLESSHEIM[0],KLESSHEIM[1],f.lat,f.lon)<=1000) add('hell48');
+    if(['Siedlung','Haus','Produktionsstätte','Grab'].includes(ty)) add('gutshof');
+    if(ty==='Einzelfund') add('hell61fib','hell74');
+  }
+  if(e==='Frühmittelalter') add('foeFma');
+  if(ty==='Kirche' || ty==='Schloss') add('dehio');
+  if(f.id===49) add('hell69','berndl');           // Pfarrkirche Wals: Roman relief at the entrance
+  if(f.name==='Schloss Kleßheim') add('hell62graves','hell48');
+  if(ty==='Schanze') add('mitterer00','mitterer99');
+  if(ty==='Birnbaum') add('bechstein');
   return [...k].map(x=>LIT[x]);
+}
+function litHtml(f){
+  const all=litFor(f), item=l=>`<li>${l.url?`<a href="${l.url}" target="_blank" rel="noopener">${l.t}</a>`:l.t}`+
+    `<span class="muted">${l.en?'':t('inGerman')}${l.n?' – '+l.n[lang]:''}</span></li>`;
+  const sec=(k,list)=>list.length?`<div class="lit"><b>${t(k)}</b><ul>${list.map(item).join('')}</ul></div>`:'';
+  return sec('litTitle',all.filter(l=>l.url))+sec('printTitle',all.filter(l=>!l.url));
 }
 // data is German; English labels come from the tables above
 const epochName=k=>lang==='de'?k:EPOCHS[k].en;
@@ -268,7 +322,7 @@ function popupHtml(f){
   <div>${typeName(f.type)}${orig(f.type)}</div>
   ${dist}
   <div class="muted">${g} · ±50 m · #${f.id}</div>
-  ${(lit=>lit.length?`<div class="lit"><b>${t('litTitle')}</b><ul>${lit.map(l=>`<li><a href="${l.url}" target="_blank" rel="noopener">${l.t}</a>${l.de?`<span class="muted">${t('inGerman')}</span>`:''}</li>`).join('')}</ul></div>`:'')(litFor(f))}
+  ${litHtml(f)}
   <div style="margin-top:6px"><a href="https://www.google.com/maps/dir/?api=1&destination=${g}&travelmode=walking" target="_blank" rel="noopener">${t('walk')}</a> · <a href="https://www.openstreetmap.org/?mlat=${f.lat}&mlon=${f.lon}#map=18/${f.lat}/${f.lon}" target="_blank" rel="noopener">OSM ↗</a></div>`;
 }
 
