@@ -24,7 +24,7 @@ Die Fundstellen stammen von der Ausstellungstafel *„Archäologische Fundstelle
 
 ## Bitte beachten
 
-Viele Fundstellen liegen auf Privatgrund oder sind geschützte Denkmäler. **Schauen, nicht graben:** Metallsuche und Grabungen ohne Genehmigung des Bundesdenkmalamts sind in Österreich verboten.
+**Bitte respektiere die Rechte der Grundeigentümer.** Die meisten Fundstellen liegen auf privaten Feldern, Wiesen oder Gärten. Betritt kein Privatgrund ohne Erlaubnis, bleib auf öffentlichen Wegen und betrachte die Stellen von dort aus. Manche Fundstellen sind zudem geschützte Denkmäler. **Schauen, nicht graben:** Metallsuche und Grabungen ohne Genehmigung des Bundesdenkmalamts sind in Österreich verboten.
 
 ## Technik
 

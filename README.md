@@ -24,7 +24,7 @@ The find spots come from the exhibition board *“Archäologische Fundstellenkar
 
 ## Please note
 
-Many sites are on private land or are protected monuments. **Look, don't dig:** metal detecting and digging without a permit from the Bundesdenkmalamt are illegal in Austria.
+**Please respect landowners' rights.** Most sites lie in private fields, meadows or gardens. Do not enter private land without permission; stay on public paths and view the sites from there. Some sites are also protected monuments. **Look, don't dig:** metal detecting and digging without a permit from the Bundesdenkmalamt are illegal in Austria.
 
 ## Technology
 
