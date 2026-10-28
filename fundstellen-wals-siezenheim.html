@@ -45,8 +45,16 @@
   #info{display:none;position:absolute;z-index:1200;inset:0;background:rgba(0,0,0,.35);align-items:center;justify-content:center;padding:16px}
   #info .card{background:#fff;border-radius:12px;max-width:460px;padding:16px 18px;font-size:13.5px;line-height:1.5}
   #info h2{font-size:16px;margin:0 0 8px}
-  @media (max-width:899px){.leaflet-top.leaflet-right{top:240px}.leaflet-bottom.leaflet-left{bottom:56px}}
-  @media (min-width:900px){.leaflet-top.leaflet-right{right:375px}#sheet{left:auto;right:10px;top:10px;bottom:auto;max-height:calc(100vh - 20px);width:360px}#top{right:auto}}
+  #btnMenu{margin-left:auto;font-size:16px;line-height:1;padding:5px 11px}
+  @media (max-width:899px){
+    .leaflet-top.leaflet-right{top:calc(var(--topH,60px) + 10px)}.leaflet-bottom.leaflet-left{bottom:56px}
+    #top .bar{margin-top:0}
+    #top.quiet #status{display:none}
+    #menu{display:none;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
+    #top.open #menu{display:block}
+    #menu .row:first-of-type{margin-top:8px}
+  }
+  @media (min-width:900px){#top{display:flex;flex-direction:column}#menu{display:contents}#btnMenu{display:none}#menu h1{order:0}#menu .sub{order:1}#status{order:2}#top .bar{order:3}#menu .row{order:4}.leaflet-top.leaflet-right{right:375px}#sheet{left:auto;right:10px;top:10px;bottom:auto;max-height:calc(100vh - 20px);width:360px}#top{right:auto}}
   .lit{margin-top:6px;padding-top:6px;border-top:1px solid var(--line);font-size:12px}
   .lit ul{margin:2px 0 0;padding-left:16px}
   .lit li{margin:2px 0}
@@ -59,19 +67,25 @@
 <div id="map"></div>
 
 <div id="top" class="panel">
-  <h1 data-i18n="title"></h1>
-  <div class="sub" data-i18n="sub"></div>
-  <div id="status"></div>
-  <div class="row">
+  <div class="row bar">
     <button id="btnLocate" class="primary"></button>
     <button id="btnFollow" data-i18n="follow"></button>
-    <button id="btnAlert" data-i18n="alert"></button>
-    <button id="btnInfo">ⓘ</button>
-    <button id="btnLang"><span data-l="de">DE</span> | <span data-l="en">EN</span></button>
+    <button id="btnMenu" aria-expanded="false">☰</button>
   </div>
-  <div class="row">
-    <button id="btnOverlay" class="on" data-i18n="overlay"></button>
-    <label class="opac"><span data-i18n="opacity"></span> <input id="opacity" type="range" min="0" max="1" step="0.05" value="0.55"></label>
+  <div id="status"></div>
+  <!-- on phones this is a collapsible menu; on desktop it is laid out inline (display:contents) -->
+  <div id="menu">
+    <h1 data-i18n="title"></h1>
+    <div class="sub" data-i18n="sub"></div>
+    <div class="row">
+      <button id="btnAlert" data-i18n="alert"></button>
+      <button id="btnInfo">ⓘ</button>
+      <button id="btnLang"><span data-l="de">DE</span> | <span data-l="en">EN</span></button>
+    </div>
+    <div class="row">
+      <button id="btnOverlay" class="on" data-i18n="overlay"></button>
+      <label class="opac"><span data-i18n="opacity"></span> <input id="opacity" type="range" min="0" max="1" step="0.05" value="0.55"></label>
+    </div>
   </div>
 </div>
 
@@ -124,6 +138,7 @@ const I18N = {
     alertOn:"Alarm, sobald du weniger als {r} m von einer Fundstelle entfernt bist", alertOff:"Näherungsalarm aus",
     roadTip:"Römerstraße (ungefährer Verlauf)", street:"Straßenkarte", topo:"Topografisch", sat:"Satellit",
     origMap:"Originale Fundkarte", road:"Römerstraße",
+    menu:"Menü",
     litTitle:"Fachliteratur online (frei zugänglich)", printTitle:"Gedruckte Literatur (Bibliothek)", inGerman:"",
     compass:["N","NO","O","SO","S","SW","W","NW"]
   },
@@ -150,6 +165,7 @@ const I18N = {
     alertOn:"Alert when within {r} m of a find", alertOff:"Proximity alert off",
     roadTip:"Roman road (approx.)", street:"Street map", topo:"Topographic", sat:"Satellite",
     origMap:"Original find map", road:"Roman road",
+    menu:"Menu",
     litTitle:"Literature online (free access)", printTitle:"Printed literature (library)", inGerman:" (in German)",
     compass:["N","NE","E","SE","S","SW","W","NW"]
   }
@@ -370,9 +386,11 @@ function renderList(){
 let me=null, meMarker=null, accCircle=null, watchId=null, following=false, alertOn=false;
 const alerted=new Set(); const ALERT_RADIUS=75;
 const statusEl=document.getElementById('status');
+const topEl=document.getElementById('top');
 // status is kept as a function so it can be re-rendered after a language switch
 let statusFn=()=>t('statusOff');
-function setStatus(fn){statusFn=fn;statusEl.innerHTML=fn();}
+// quiet: nothing worth showing on phones, where the status line is then hidden
+function setStatus(fn,quiet){statusFn=fn;statusEl.innerHTML=fn();topEl.classList.toggle('quiet',!!quiet);}
 function locateLabel(){document.getElementById('btnLocate').textContent=t(watchId!==null?'stopGps':'locate');}
 function setBtn(id,on){document.getElementById(id).classList.toggle('on',on);}
 function toast(t){const el=document.getElementById('toast');el.textContent=t;el.style.display='block';clearTimeout(toast._t);toast._t=setTimeout(()=>el.style.display='none',3500);}
@@ -403,7 +421,7 @@ function updatePosition(lat,lng,acc,simulated){
 
 document.getElementById('btnLocate').onclick=()=>{
   if(!('geolocation' in navigator)){setStatus(()=>t('noGeo'));return;}
-  if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null;setBtn('btnLocate',false);locateLabel();setStatus(()=>t('stopped'));return;}
+  if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null;setBtn('btnLocate',false);locateLabel();setStatus(()=>t('stopped'),true);return;}
   setStatus(()=>t('waiting'));
   following=true;setBtn('btnFollow',true);
   watchId=navigator.geolocation.watchPosition(
@@ -428,6 +446,13 @@ const sheet=document.getElementById('sheet');
 document.getElementById('sheetHead').onclick=()=>{sheet.classList.toggle('collapsed');document.getElementById('sheetToggle').textContent=sheet.classList.contains('collapsed')?'▴':'▾';};
 if(innerWidth<900) sheet.classList.add('collapsed');
 const info=document.getElementById('info');
+const btnMenu=document.getElementById('btnMenu');
+function setMenu(open){topEl.classList.toggle('open',open);btnMenu.setAttribute('aria-expanded',open);btnMenu.textContent=open?'✕':'☰';}
+btnMenu.onclick=()=>setMenu(!topEl.classList.contains('open'));
+map.on('click dragstart',()=>setMenu(false));
+topEl.classList.add('quiet');
+// keep the zoom/layer controls just below the top panel on phones
+new ResizeObserver(()=>document.documentElement.style.setProperty('--topH',topEl.offsetHeight+'px')).observe(topEl);
 document.getElementById('btnInfo').onclick=()=>info.style.display='flex';
 document.getElementById('btnInfoClose').onclick=()=>info.style.display='none';
 info.onclick=e=>{if(e.target===info)info.style.display='none';};
@@ -441,6 +466,7 @@ function applyLang(){
   document.querySelectorAll('#btnLang [data-l]').forEach(el=>el.classList.toggle('cur',el.dataset.l===lang));
   document.getElementById('btnLang').title=t('langBtn');
   document.getElementById('btnInfo').title=t('about');
+  btnMenu.title=t('menu');btnMenu.setAttribute('aria-label',t('menu'));
   locateLabel();
   statusEl.innerHTML=statusFn();
   renderFilters(); renderList(); renderLayers();
