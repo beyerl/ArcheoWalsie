@@ -181,7 +181,9 @@ const I18N = {
     arHint:"Ziehe die Einblendung, bis die rote Hütte genau auf dem Zeppezauerhaus am Untersberg sitzt. Mit zwei Fingern auseinander- oder zusammenziehen, um den Bildwinkel anzupassen.",
     arHintCal:"Kalibriert. Nachjustieren durch Ziehen, Bildwinkel mit zwei Fingern.",
     arStat:"Blick {dir} {deg}° · <b>{n}</b> Fundstellen im Umkreis von 2 km", arWait:"Warte auf Standort…",
-    arNoCam:"Kamera nicht verfügbar ({m}). Die Einblendung funktioniert trotzdem.", arNoSensor:"Kein Lagesensor gefunden: ziehe zum Umsehen.",
+    arNoCam:"Kamera nicht verfügbar ({m}). Die Einblendung funktioniert trotzdem.",
+    arCamDenied:"Kamerazugriff verweigert. Erlaube die Kamera an zwei Stellen: 1) im Browser für diese Seite (Schloss-Symbol links neben der Adresse → Berechtigungen → Kamera), 2) in den Android-Einstellungen für den Browser selbst (Apps → Firefox bzw. Chrome → Berechtigungen → Kamera). Danach die AR-Ansicht neu öffnen.",
+    arCamNone:"Keine Kamera gefunden. Die Einblendung funktioniert trotzdem.", arCamBusy:"Die Kamera wird gerade von einer anderen App benutzt. Schließe sie und öffne die AR-Ansicht neu.", arNoSensor:"Kein Lagesensor gefunden: ziehe zum Umsehen.",
     arNoGl:"AR-Ansicht konnte nicht geladen werden: {m}", hut:"Zeppezauerhaus", hutSub:"Kalibrierpunkt · {d}",
     compass:["N","NO","O","SO","S","SW","W","NW"]
   },
@@ -214,7 +216,9 @@ const I18N = {
     arHint:"Drag the overlay until the red hut sits exactly on the Zeppezauerhaus on the Untersberg. Pinch to adjust the field of view.",
     arHintCal:"Calibrated. Drag to fine-tune, pinch to adjust the field of view.",
     arStat:"Facing {dir} {deg}° · <b>{n}</b> finds within 2 km", arWait:"Waiting for location…",
-    arNoCam:"Camera unavailable ({m}). The overlay still works.", arNoSensor:"No orientation sensor found: drag to look around.",
+    arNoCam:"Camera unavailable ({m}). The overlay still works.",
+    arCamDenied:"Camera access was refused. Allow the camera in two places: 1) in the browser for this site (lock icon left of the address → Permissions → Camera), 2) in the Android settings for the browser itself (Apps → Firefox or Chrome → Permissions → Camera). Then reopen the AR view.",
+    arCamNone:"No camera found. The overlay still works.", arCamBusy:"The camera is in use by another app. Close it and reopen the AR view.", arNoSensor:"No orientation sensor found: drag to look around.",
     arNoGl:"Could not load the AR view: {m}", hut:"Zeppezauerhaus", hutSub:"calibration point · {d}",
     compass:["N","NE","E","SE","S","SW","W","NW"]
   }
@@ -791,7 +795,7 @@ async function arStart(){
     addEventListener('deviceorientation',onRel); addEventListener('deviceorientationabsolute',onAbs);
   });
   cam.then(s=>{ if(!ar.on){s.getTracks().forEach(x=>x.stop());return;} ar.stream=s; arVideo.srcObject=s; arVideo.play().catch(()=>{}); })
-     .catch(e=>{ ar.msg=t('arNoCam',{m:e.name||e.message}); setArStat(); });
+     .catch(e=>{ ar.msg=t({NotAllowedError:'arCamDenied',SecurityError:'arCamDenied',NotFoundError:'arCamNone',NotReadableError:'arCamBusy'}[e.name]||'arNoCam',{m:e.name||e.message}); setArStat(); });
   // without a sensor (desktop), start by facing the hut so the calibration point is in view
   setTimeout(()=>{ if(ar.on&&!ar.sensor){ if(!ar.cal&&me) ar.yaw=bearing(me.lat,me.lng,HUT.lat,HUT.lon); ar.msg=ar.msg||t('arNoSensor'); setArStat(); } },1500);
   arPlace(); arFrame();
