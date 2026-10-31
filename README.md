@@ -17,6 +17,7 @@ An interactive map of the archaeological find spots in the municipality of Wals-
 - Scholarly literature in the info boxes: links to freely accessible papers, plus printed works to look up in a library
 - German and English interface: switch with the **DE | EN** button
 - Right-click or long-press the map to test from any spot without GPS
+- **AR view** (in the menu): shows the camera image with low-poly 3D models of all finds within 2 km, placed on the terrain using elevation data, with the map as a minimap. To calibrate, drag the overlay until the red hut sits on the Zeppezauerhaus on the Untersberg; pinch to adjust the field of view
 
 ## Data source and accuracy
 
@@ -28,4 +29,4 @@ The find spots come from the exhibition board *“Archäologische Fundstellenkar
 
 ## Technology
 
-A single static HTML file using [Leaflet](https://leafletjs.com/), with no build step. Map tiles come from © OpenStreetMap contributors, OpenTopoMap and Esri. To run it locally, open `fundstellen-wals-siezenheim.html` in a browser. GPS needs https or localhost.
+A single static HTML file using [Leaflet](https://leafletjs.com/), with no build step. The AR view loads [three.js](https://threejs.org/) on demand; terrain heights are EU-DEM 25 m data via [OpenTopoData](https://www.opentopodata.org/). Map tiles come from © OpenStreetMap contributors, OpenTopoMap and Esri. To run it locally, open `fundstellen-wals-siezenheim.html` in a browser. GPS, camera and motion sensors need https or localhost.

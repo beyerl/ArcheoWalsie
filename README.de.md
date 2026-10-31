@@ -17,6 +17,7 @@ Eine interaktive Karte der archäologischen Fundstellen in der Gemeinde Wals-Sie
 - Fachliteratur in den Infoboxen: Links zu frei zugänglichen Aufsätzen sowie gedruckte Werke zum Nachschlagen in der Bibliothek
 - Oberfläche auf Deutsch und Englisch: umschalten mit der Schaltfläche **DE | EN**
 - Rechtsklick oder langes Drücken auf die Karte simuliert einen Standort, ganz ohne GPS
+- **AR-Ansicht** (im Menü): zeigt das Kamerabild mit Low-Poly-3D-Modellen aller Fundstellen im Umkreis von 2 km, anhand von Höhendaten ins Gelände gesetzt, dazu die Karte als Minikarte. Zum Kalibrieren die Einblendung ziehen, bis die rote Hütte auf dem Zeppezauerhaus am Untersberg sitzt; mit zwei Fingern den Bildwinkel anpassen
 
 ## Datenquelle und Genauigkeit
 
@@ -28,4 +29,4 @@ Die Fundstellen stammen von der Ausstellungstafel *„Archäologische Fundstelle
 
 ## Technik
 
-Eine einzelne statische HTML-Datei mit [Leaflet](https://leafletjs.com/), ohne Build-Schritt. Die Kartenkacheln stammen von © OpenStreetMap-Mitwirkenden, OpenTopoMap und Esri. Lokal genügt es, `fundstellen-wals-siezenheim.html` im Browser zu öffnen. GPS benötigt https oder localhost.
+Eine einzelne statische HTML-Datei mit [Leaflet](https://leafletjs.com/), ohne Build-Schritt. Die AR-Ansicht lädt bei Bedarf [three.js](https://threejs.org/); die Geländehöhen sind EU-DEM-25-m-Daten über [OpenTopoData](https://www.opentopodata.org/). Die Kartenkacheln stammen von © OpenStreetMap-Mitwirkenden, OpenTopoMap und Esri. Lokal genügt es, `fundstellen-wals-siezenheim.html` im Browser zu öffnen. GPS, Kamera und Lagesensoren benötigen https oder localhost.
